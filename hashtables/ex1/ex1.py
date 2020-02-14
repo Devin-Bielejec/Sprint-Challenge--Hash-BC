@@ -20,16 +20,18 @@ def get_indices_of_item_weights(weights, length, limit):
         if item < limit:
             #Finding the "complement"
             item_pair = limit - item
+            #Try to get the index of the complement
             item_pair_index = hash_table_retrieve(ht, item_pair)
             
             #if index is None, continue
             if item_pair_index is None:
                 continue
-            elif item_pair_index >= 0 and item_pair_index != index:
-                if item_pair_index >= index:
-                    return (item_pair_index, index)
-                else:
-                    return (index, item_pair_index)
+            #item at index >= 0 and can't be at the same index as the orignal
+            elif item_pair_index >= index and item_pair_index != index:
+                #Tuple must be return in descreasing order of indices
+                return (item_pair_index, index)
+            else:
+                return (index, item_pair_index)
 
     return None
 

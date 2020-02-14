@@ -42,7 +42,7 @@ def valid_proof(last_hash, proof):
     IE:  last_hash: ...AE9123456, new hash 123456E88...
     """
 
-    guess = f"DEVINBIELEJECSMELLS{proof}".encode()
+    guess = f"{last_hash}{proof}".encode()
     guess_hash = hashlib.sha256(guess).hexdigest()
     return guess_hash[:6] == last_hash[-6:]
 
@@ -69,19 +69,23 @@ if __name__ == '__main__':
         exit()
     # Run forever until interrupted
     while True:
-        # Get the last proof from the server
-        r = requests.get(url=node + "/last_proof")
-        data = r.json()
-        print("data", data)
-        new_proof = proof_of_work(data.get('proof'))
+        try:
+            print("Let's go again!")
+            # Get the last proof from the server
+            r = requests.get(url=node + "/last_proof")
+            data = r.json()
+            print("data", data)
+            new_proof = proof_of_work(data.get('proof'))
 
-        post_data = {"proof": new_proof,
-                     "id": id}
+            post_data = {"proof": new_proof,
+                        "id": id}
 
-        r = requests.post(url=node + "/mine", json=post_data)
-        data = r.json()
-        if data.get('message') == 'New Block Forged':
-            coins_mined += 1
-            print("Total coins mined: " + str(coins_mined))
-        else:
-            print(data.get('message'))
+            r = requests.post(url=node + "/mine", json=post_data)
+            data = r.json()
+            if data.get('message') == 'New Block Forged':
+                coins_mined += 1
+                print("Total coins mined: " + str(coins_mined))
+            else:
+                print(data.get('message'))
+        except:
+            print("except")
